@@ -11,7 +11,7 @@ from torch.utils.data.distributed import DistributedSampler
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.distributed import init_process_group, destroy_process_group
 
-torch.backends.cudnn.conv.fp32_precision = 'tf32'
+#torch.backends.cudnn.conv.fp32_precision = 'tf32'
 
 class MultiGPUTrainer:
     def __init__(
@@ -35,15 +35,17 @@ class MultiGPUTrainer:
                                        batch_size = self.batch_size, 
                                        shuffle = False, 
                                        pin_memory = True, 
-                                       sampler = self.train_sampler
+                                       sampler = self.train_sampler,
+                                       num_workers = 12,  # <--- 加上這一行
                                       )
         self.validate_sampler = DistributedSampler(validate_set)
         self.validate_loader = DataLoader(dataset = validate_set, 
                                           batch_size = self.batch_size, 
                                           shuffle = False, 
                                           pin_memory = True, 
-                                          sampler = self.validate_sampler
-                                         )
+                                          sampler = self.validate_sampler,
+                                          num_workers = 12,  # <--- 加上這一行
+                                        )
         
         self.learning_rate = learning_rate
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr = self.learning_rate)
@@ -57,6 +59,25 @@ class MultiGPUTrainer:
         self.global_step = 0
         self.curr_epoch = 0
         self.min_validation_loss = float('inf')
+        
+        # ================= 新增：讀取進度接續訓練 =================
+        checkpoint_path = r"C:\Users\ylliu\OneDrive\Desktop\SketchDNN\runs\train_try_1\checkpoints\epoch_26.pth"
+        
+        import os
+        if os.path.exists(checkpoint_path):
+            print(f"GPU {self.gpu_id} 正在載入存檔...")
+            # 加入 map_location 確保模型正確掛載到你的顯示卡上
+            checkpoint = torch.load(checkpoint_path, map_location=f"cuda:{self.gpu_id}")
+            
+            # 把記憶與進度倒回去 (使用原作者設定的 key)
+            self.model.load_state_dict(checkpoint["model"])
+            self.optimizer.load_state_dict(checkpoint["optimizer"])
+            
+            # 把當前圈數推進到 26 + 1 = 27
+            self.curr_epoch = checkpoint["epoch"] + 1  
+            
+            print(f"成功恢復進度！準備從 Epoch {self.curr_epoch} 繼續訓練")
+        # =======================================================
     
     def train_batch(self, nodes : Tensor, params_mask : Tensor) -> float:
         self.optimizer.zero_grad()
@@ -196,7 +217,7 @@ class MultiGPUTrainer:
         '''
         os.environ["MASTER_ADDR"] = "localhost"
         os.environ["MASTER_PORT"] = "44445"
-        init_process_group(backend="nccl", rank=rank, world_size=world_size)
+        init_process_group(backend="gloo", rank=rank, world_size=world_size)
         torch.cuda.set_device(rank)
 
 def train_on_multiple_gpus(rank: int, 

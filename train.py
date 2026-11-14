@@ -1,4 +1,6 @@
 import torch
+import os
+os.environ["USE_LIBUV"] = "0"
 import torch.multiprocessing as mp
 from torch.utils.data import random_split
 import config
