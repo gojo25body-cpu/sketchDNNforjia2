@@ -1,0 +1,22 @@
+{
+  "name": "noise5",
+  "smoke": false,
+  "benchmark": false,
+  "resume": false,
+  "derived": "soft",
+  "epochs": 50,
+  "target_epochs": 1000,
+  "bench_steps": 300,
+  "batch": 512,
+  "pairs": 8,
+  "lr": 0.0003,
+  "dim": 256,
+  "layers": 6,
+  "heads": 8,
+  "val_sketches": 20000,
+  "train_limit": null,
+  "amp": true,
+  "noise": 5.0,
+  "noise_clean": 0.2,
+  "seed": 0
+}

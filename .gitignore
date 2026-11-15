@@ -1,4 +1,12 @@
-.gitignore
 /.vscode
 /data
-/__pycache__
+# Python 暫存檔（任何資料夾）
+__pycache__/
+*.pyc
+# 模型訓練的中間檔：只保留各實驗的 best.pt（使用模型用），不上傳 last.pt（接續訓練用，每個 71 MB）
+runs_constraint/*/last.pt
+runs_constraint/smoke/
+# 個人使用時產生的檔案
+runs_constraint/dims_*.json
+*.ai_dims.json
+out.json

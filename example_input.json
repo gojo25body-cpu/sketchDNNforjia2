@@ -1,0 +1,14 @@
+{
+  "說明": "範例輸入：一個 L 形板，有一個孔和一個圓角。pairs 可改成 [[0, 1]]（1 對）或 [[0, 1], [1, 2]]（2 對）。圖元編號從 0 開始。",
+  "primitives": [
+    {"type": "line", "start": [0, 0], "end": [100, 0]},
+    {"type": "line", "start": [100, 0], "end": [100, 40]},
+    {"type": "line", "start": [100, 40], "end": [50, 40]},
+    {"type": "arc", "center": [50, 50], "radius": 10, "start_angle": 3.14159265, "end_angle": 4.71238898},
+    {"type": "line", "start": [40, 50], "end": [40, 80]},
+    {"type": "line", "start": [40, 80], "end": [0, 80]},
+    {"type": "line", "start": [0, 80], "end": [0, 0]},
+    {"type": "circle", "center": [20, 20], "radius": 8}
+  ],
+  "pairs": [[0, 1], [6, 7]]
+}

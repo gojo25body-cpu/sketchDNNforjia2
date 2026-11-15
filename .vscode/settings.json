@@ -2,5 +2,7 @@
     "python.defaultInterpreterPath": "~/miniconda3/envs/thesis/bin/python3.11",
     "python.analysis.extraPaths": [
         "./SketchGraphs"
-    ]
+    ],
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda"
 }
